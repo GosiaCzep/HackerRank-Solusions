@@ -1,0 +1,22 @@
+/* extract maximum scores for all of the challenges */
+WITH 
+    max_scores AS
+    (
+    SELECT 
+        hacker_id,
+        challenge_id,
+        MAX(score) max_score
+    FROM submissions
+    GROUP BY hacker_id, challenge_id
+    )
+/* in the main query find the total score */    
+SELECT 
+    h.hacker_id, 
+    h.name, 
+    SUM(ms.max_score) total_score
+FROM max_scores ms 
+INNER JOIN hackers h ON h.hacker_id = ms.hacker_id
+/* exclude the hackers with total scores equal 0 */
+WHERE ms.max_score > 0
+GROUP BY h.hacker_id, h.name
+ORDER BY total_score DESC, hacker_id;
